@@ -1,7 +1,12 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
 }
+task generateSourcesJar(type: Jar){
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set('sources')
 
+}
 android {
     compileSdkVersion 30
 
@@ -23,7 +28,26 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            group = 'com.github.yutai1993'
+            version = '1.0.0'
+            //发布release版本
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.findByName('release')
+                //groupId通常是自己的gitee或者GitHub的账户地址
+                groupId = group
+                //artifactId通常是指待发布项目的名称，也就是别名
+                artifactId = 'utsIntegrate'
+                //version通常是指待发布项目的版本号，这里是写死的，通常我们取项目versionName
+                version = version
+            }
+        }
+    }
+}
 dependencies {
 
     testImplementation 'junit:junit:4.13.2'
